@@ -46,39 +46,55 @@ class _HomePageState extends State<HomePage> {
           children: [
             Card(
               elevation: 4,
+              margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
               color: Colors.green,
-              child: Padding(
-                padding:
-                const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Total Saldo",
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 16,
+              child: SizedBox(
+                width: double.infinity,
+                height: 140,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Total Saldo",
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      formatCurrency.format(totalSaldo),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
+                      const SizedBox(height: 8),
+                      Text(
+                        formatCurrency.format(totalSaldo),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
+
             const SizedBox(height: 20),
 
-            // Daftar Transaksi
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Riwayat Transaksi",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
             Expanded(
               child: transactions.isEmpty
                   ? const Center(
@@ -136,7 +152,6 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
 
-      // Tombol tambah
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final result = await Navigator.push(
@@ -150,6 +165,7 @@ class _HomePageState extends State<HomePage> {
           }
         },
         backgroundColor: Colors.green,
+        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
     );

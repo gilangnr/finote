@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class AddTransactionPage extends StatefulWidget {
   const AddTransactionPage({super.key});
@@ -33,7 +35,6 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Jenis Transaksi
                   const Text(
                     "Jenis Transaksi",
                     style: TextStyle(fontWeight: FontWeight.bold),
@@ -45,14 +46,11 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 16),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     ),
                     items: const [
-                      DropdownMenuItem(
-                          value: "Pengeluaran", child: Text("Pengeluaran")),
-                      DropdownMenuItem(
-                          value: "Pemasukan", child: Text("Pemasukan")),
+                      DropdownMenuItem(value: "Pengeluaran", child: Text("Pengeluaran")),
+                      DropdownMenuItem(value: "Pemasukan", child: Text("Pemasukan")),
                     ],
                     onChanged: (value) {
                       setState(() {
@@ -62,7 +60,6 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Judul Transaksi
                   TextField(
                     controller: _titleController,
                     decoration: InputDecoration(
@@ -75,10 +72,13 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Jumlah
                   TextField(
                     controller: _amountController,
                     keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      CurrencyInputFormatter(),
+                    ],
                     decoration: InputDecoration(
                       labelText: "Jumlah (Rp)",
                       border: OutlineInputBorder(
@@ -89,7 +89,6 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   ),
                   const SizedBox(height: 30),
 
-                  // Tombol Simpan
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
@@ -97,21 +96,23 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
                     ),
                     onPressed: () {
                       if (_titleController.text.isNotEmpty &&
                           _amountController.text.isNotEmpty) {
+                        final cleanAmount = _amountController.text.replaceAll('.', '');
+
                         Navigator.pop(context, {
                           "title": _titleController.text,
-                          "amount": int.parse(_amountController.text),
+                          "amount": int.parse(cleanAmount),
                           "type": _selectedType,
                         });
                       }
                     },
                     child: const Text(
                       "Simpan",
-                      style:
-                      TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   )
                 ],
@@ -120,6 +121,26 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class CurrencyInputFormatter extends TextInputFormatter {
+  final NumberFormat _formatter = NumberFormat.decimalPattern('id');
+
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    if (newValue.text.isEmpty) {
+      return newValue.copyWith(text: '');
+    }
+
+    final intValue = int.parse(newValue.text.replaceAll('.', ''));
+
+    final newText = _formatter.format(intValue);
+
+    return TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
     );
   }
 }
